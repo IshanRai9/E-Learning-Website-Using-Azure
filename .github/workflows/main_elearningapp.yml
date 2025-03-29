@@ -33,16 +33,16 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '20'
-
+          cache: 'npm'
       - name: Install backend dependencies
         run: |
           cd elearning-backend
-          npm install
+          npm ci
 
       - name: Install frontend dependencies
         run: |
           cd elearning-frontend
-          npm install
+          npm ci
           npm run build
 
         
