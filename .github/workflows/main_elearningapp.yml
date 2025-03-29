@@ -1,7 +1,4 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
-name: Build and deploy Node.js app to Azure Web App - ElearningApp
+name: Build and Deploy ElearningApp
 
 on:
   push:
@@ -13,24 +10,53 @@ jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
-        uses: actions/setup-node@v3
+      - name: Set Up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: '20.x'
 
-      - name: Zip artifact for deployment
-        run: zip release.zip ./* -r
+      - name: Install Backend Dependencies
+        run: |
+          cd elearning-backend
+          npm install
 
-      - name: Upload artifact for deployment job
+      - name: Build Backend
+        run: |
+          cd elearning-backend
+          npm run build --if-present
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd elearning-frontend
+          npm install
+
+      - name: Build Frontend
+        run: |
+          cd elearning-frontend
+          npm run build --if-present
+
+      - name: Prepare Artifact for Deployment
+        run: |
+          mkdir -p deployment
+          cp -r elearning-backend/dist deployment/backend
+          cp -r elearning-frontend/build deployment/frontend
+          cp -r elearning-backend/node_modules deployment/backend/node_modules
+          cp -r elearning-frontend/node_modules deployment/frontend/node_modules
+          cp elearning-backend/package.json deployment/backend/
+          cp elearning-frontend/package.json deployment/frontend/
+          # Include any other necessary files
+
+      - name: Archive Deployment Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: node-app
-          path: release.zip
+          name: elearning-app
+          path: deployment/
 
   deploy:
     runs-on: ubuntu-latest
@@ -39,30 +65,19 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download Deployment Artifact
         uses: actions/download-artifact@v4
         with:
-          name: node-app
+          name: elearning-app
+          path: deployment/
 
-      - name: Unzip artifact for deployment
-        run: unzip release.zip
-      
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_DDF59F7246F1469CA27FE011B91252C1 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_65E5A88A874A42CD99C2519268ADB2CF }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_1C311FA0C63C40708C4BFCD2E083D106 }}
-
-      - name: 'Deploy to Azure Web App'
+      - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'ElearningApp'
-          slot-name: 'Production'
-          package: .
-          
+          package: deployment/
