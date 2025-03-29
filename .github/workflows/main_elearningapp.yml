@@ -36,12 +36,12 @@ jobs:
 
       - name: Install backend dependencies
         run: |
-          cd backend
+          cd elearning-backend
           npm install
 
       - name: Install frontend dependencies
         run: |
-          cd frontend
+          cd elearning-frontend
           npm install
           npm run build
 
