@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { MsalProvider } from "@azure/msal-react";
-import { msalInstance } from "./authConfig";
+import { msalInstance } from "elearning-frontend/src/authConfig.js";
 import Home from "./Home";
 import Dashboard from "./Dashboard";
 import Login from "./Login";
