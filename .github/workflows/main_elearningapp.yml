@@ -44,14 +44,24 @@ jobs:
       - name: Prepare Artifact for Deployment
         run: |
           mkdir -p deployment
-          cp -r elearning-backend/dist deployment/backend
+          mkdir -p deployment/backend
+          mkdir -p deployment/frontend
+
           cp -r elearning-frontend/build deployment/frontend
-          cp -r elearning-backend/node_modules deployment/backend/node_modules
-          cp -r elearning-frontend/node_modules deployment/frontend/node_modules
+
+          # Copy node_modules only if they exist
+          if [ -d "elearning-backend/node_modules" ]; then
+            cp -r elearning-backend/node_modules deployment/backend/node_modules
+          fi
+
+          if [ -d "elearning-frontend/node_modules" ]; then
+            cp -r elearning-frontend/node_modules deployment/frontend/node_modules
+          fi
+
           cp elearning-backend/package.json deployment/backend/
           cp elearning-frontend/package.json deployment/frontend/
-          # Include any other necessary files
 
+      # Include any other necessary files 
       - name: Archive Deployment Artifact
         uses: actions/upload-artifact@v4
         with:
