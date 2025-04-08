@@ -1,12 +1,17 @@
 import React from "react";
-import { useMsal } from "@azure/msal-react";
+import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
 
 function Logout() {
-  const { instance } = useMsal();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await instance.logoutPopup();
-    window.location.href = "/";
+    try {
+      await Auth.signOut();
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   return <button onClick={handleLogout}>Logout</button>;

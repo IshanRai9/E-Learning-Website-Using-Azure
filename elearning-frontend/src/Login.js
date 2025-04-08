@@ -1,18 +1,24 @@
 import React from "react";
-import { useMsal } from "@azure/msal-react";
+import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const { instance } = useMsal();
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
-    await instance.loginPopup();
-    window.location.href = "/dashboard";
+    try {
+      // Opens the Cognito hosted UI for authentication
+      await Auth.federatedSignIn();
+      // The redirect to dashboard will be handled by the OAuth callback
+    } catch (error) {
+      console.error('Error signing in:', error);
+    }
   };
 
   return (
     <div>
       <h1>Login</h1>
-      <button onClick={handleLogin}>Sign in with Azure AD B2C</button>
+      <button onClick={handleLogin}>Sign in with AWS Cognito</button>
     </div>
   );
 }

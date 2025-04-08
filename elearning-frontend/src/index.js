@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App";
-import { MsalProvider } from "@azure/msal-react";
-import { msalInstance } from "./authConfig";
+import { Amplify } from 'aws-amplify';
+import awsConfig from './authConfig';
+
+// Configure Amplify
+Amplify.configure(awsConfig);
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <MsalProvider instance={msalInstance}>
-      <App />
-    </MsalProvider>
+    <App />
   </React.StrictMode>
 );
