@@ -1,4 +1,4 @@
-import { Amplify, Auth } from 'aws-amplify';
+import { Amplify } from 'aws-amplify';
 
 const awsConfig = {
   Auth: {
@@ -11,8 +11,8 @@ const awsConfig = {
     oauth: {
       domain: 'https://ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Replace with your Cognito domain
       scope: ['email', 'openid', 'profile'],
-      redirectSignIn: 'https://your-app-url.com/', // Replace with your app URL
-      redirectSignOut: 'https://your-app-url.com/', // Replace with your app URL
+      redirectSignIn: 'ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com', // Replace with your app URL
+      redirectSignOut: 'ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com', // Replace with your app URL
       responseType: 'code'
     }
   }

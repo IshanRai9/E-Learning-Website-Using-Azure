@@ -3,8 +3,6 @@ import { Auth } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const navigate = useNavigate();
-
   const handleLogin = async () => {
     try {
       // Opens the Cognito hosted UI for authentication
