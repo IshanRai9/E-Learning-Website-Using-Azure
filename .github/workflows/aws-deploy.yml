@@ -54,7 +54,7 @@ jobs:
 
       - name: Deploy to S3 (Frontend)
         run: |
-          aws s3 sync deployment/frontend s3://your-s3-bucket-name/ --delete
+          aws s3 sync deployment/frontend s3://elearning-cclab/ --delete
 
       - name: Create backend ZIP for Elastic Beanstalk
         run: |
