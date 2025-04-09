@@ -66,7 +66,7 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name ElearningApp \
             --version-label "ver-${{ github.sha }}" \
-            --source-bundle S3Bucket="your-eb-bucket",S3Key="backend.zip"
+            --source-bundle S3Bucket="elasticbeanstalk-ap-south-1-124355639294",S3Key="backend.zip"
           
           aws elasticbeanstalk update-environment \
             --application-name ElearningApp \
