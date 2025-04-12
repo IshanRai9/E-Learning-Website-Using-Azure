@@ -60,14 +60,18 @@ jobs:
         run: |
           cd deployment
           zip -r ../backend.zip elearning-backend
-      
+        
+      - name: Upload backend.zip to S3
+        run: |
+          aws s3 cp backend.zip s3://elasticbeanstalk-ap-south-1-124355639294/backend.zip
+              
       - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk create-application-version \
             --application-name ElearningApp \
             --version-label "ver-${{ github.sha }}" \
             --source-bundle S3Bucket="elasticbeanstalk-ap-south-1-124355639294",S3Key="backend.zip"
-          
+            
           aws elasticbeanstalk update-environment \
             --application-name ElearningApp \
             --environment-name ElearningApp-env \
