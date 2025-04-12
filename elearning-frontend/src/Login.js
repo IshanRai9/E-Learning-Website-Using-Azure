@@ -15,7 +15,7 @@ function Login() {
   return (
     <div>
       <h1>Login</h1>
-      <button onClick={handleLogin}>Sign in with AWS Cognito</button>
+      <button onClick={handleLogin}>Sign in</button>
     </div>
   );
 }
