@@ -9,10 +9,10 @@ const awsConfig = {
     region: 'ap-south-1', // Replace with your region
     // Optional: OAuth configuration
     oauth: {
-      domain: 'https://ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Replace with your Cognito domain
+      domain: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Replace with your Cognito domain
       scope: ['email', 'openid', 'profile'],
-      redirectSignIn: 'ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com', // Replace with your app URL
-      redirectSignOut: 'ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com', // Replace with your app URL
+      redirectSignIn: 'http://ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com',
+      redirectSignOut: 'http://ElearningApp-env.eba-gfejmvtg.ap-south-1.elasticbeanstalk.com',
       responseType: 'code'
     }
   }
