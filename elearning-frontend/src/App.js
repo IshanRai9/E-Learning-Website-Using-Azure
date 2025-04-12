@@ -1,11 +1,6 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Home from "./Home";
-import Dashboard from "./Dashboard";
-import Login from "./Login";
-import Logout from "./Logout";
-import { useAuth } from "react-oidc-context";
+// App.js
 
+import { useAuth } from "react-oidc-context";
 
 function App() {
   const auth = useAuth();
@@ -37,7 +32,7 @@ function App() {
       </div>
     );
   }
-  
+
   return (
     <div>
       <button onClick={() => auth.signinRedirect()}>Sign in</button>
