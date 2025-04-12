@@ -9,7 +9,7 @@ const awsConfig = {
     region: 'ap-south-1', // Replace with your region
     // Optional: OAuth configuration
     oauth: {
-      domain: 'auth.ap-south-1p3ax4aaf4.amazoncognito.com', // Remove the https:// prefix
+      domain: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Remove the https:// prefix
       scope: ['email', 'openid', 'profile'],
       redirectSignIn: 'http://elearning-cclab.s3-website.ap-south-1.amazonaws.com/',
       redirectSignOut: 'http://elearning-cclab.s3-website.ap-south-1.amazonaws.com/',
