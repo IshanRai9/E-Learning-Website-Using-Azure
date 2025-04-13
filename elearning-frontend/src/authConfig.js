@@ -11,7 +11,7 @@ const awsConfig = {
     oauth: {
       domain: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Remove the https:// prefix
       scope: ['email', 'openid', 'profile'],
-      redirectSignIn: 'https://d84l1y8p4kdic.cloudfront.net',
+      redirectSignIn: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com',
       redirectSignOut: 'https://d84l1y8p4kdic.cloudfront.net',
       responseType: 'code'
     }
