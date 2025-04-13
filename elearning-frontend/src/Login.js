@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import { Auth } from 'aws-amplify';
+import { useNavigate } from 'react-router-dom';
 import Layout from './components/Layout';
 import {
   Box,
@@ -9,7 +10,10 @@ import {
   Button,
   Divider,
   Grid,
-  useTheme
+  useTheme,
+  TextField,
+  Alert,
+  Snackbar
 } from '@mui/material';
 import {
   FaGoogle,
@@ -20,36 +24,39 @@ import {
 
 function Login() {
   const theme = useTheme();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (provider = 'cognito') => {
     try {
-      await Auth.federatedSignIn({ provider });
+      setLoading(true);
+      setError('');
+
+      if (provider === 'cognito') {
+        // Handle email/password login
+        const user = await Auth.signIn(email, password);
+        console.log('Logged in user:', user);
+        navigate('/dashboard');
+      } else {
+        // Handle social login
+        await Auth.federatedSignIn({ provider });
+      }
     } catch (error) {
       console.error('Error signing in:', error);
+      setError(error.message || 'Failed to sign in');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <Layout>
       <Container maxWidth="sm">
-        <Box
-          sx={{
-            marginTop: 8,
-            marginBottom: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Paper
-            elevation={3}
-            sx={{
-              p: 4,
-              width: '100%',
-              borderRadius: 2,
-              bgcolor: 'background.paper',
-            }}
-          >
+        <Box sx={{ marginTop: 8, marginBottom: 8 }}>
+          <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
             {/* Header */}
             <Box sx={{ mb: 3, textAlign: 'center' }}>
               <FaLock size={40} color={theme.palette.primary.main} />
@@ -61,6 +68,53 @@ function Login() {
               </Typography>
             </Box>
 
+            {/* Email Login Form */}
+            <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+              <TextField
+                fullWidth
+                label="Email Address"
+                variant="outlined"
+                margin="normal"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                type="email"
+                required
+              />
+              <TextField
+                fullWidth
+                label="Password"
+                variant="outlined"
+                margin="normal"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                type="password"
+                required
+                sx={{ mb: 2 }}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                size="large"
+                type="submit"
+                disabled={loading}
+                sx={{
+                  py: 1.5,
+                  fontSize: '1.1rem',
+                  textTransform: 'none',
+                }}
+              >
+                {loading ? 'Signing in...' : 'Sign in with Email'}
+              </Button>
+            </form>
+
+            <Box sx={{ my: 3 }}>
+              <Divider>
+                <Typography color="text.secondary" variant="body2">
+                  OR
+                </Typography>
+              </Divider>
+            </Box>
+
             {/* Social Login Buttons */}
             <Grid container spacing={2}>
               <Grid item xs={12}>
@@ -70,6 +124,7 @@ function Login() {
                   size="large"
                   onClick={() => handleLogin('Google')}
                   startIcon={<FaGoogle />}
+                  disabled={loading}
                   sx={{
                     borderColor: '#DB4437',
                     color: '#DB4437',
@@ -89,6 +144,7 @@ function Login() {
                   size="large"
                   onClick={() => handleLogin('Facebook')}
                   startIcon={<FaFacebook />}
+                  disabled={loading}
                   sx={{
                     borderColor: '#4267B2',
                     color: '#4267B2',
@@ -108,6 +164,7 @@ function Login() {
                   size="large"
                   onClick={() => handleLogin('Microsoft')}
                   startIcon={<FaMicrosoft />}
+                  disabled={loading}
                   sx={{
                     borderColor: '#00A4EF',
                     color: '#00A4EF',
@@ -122,57 +179,32 @@ function Login() {
               </Grid>
             </Grid>
 
-            <Box sx={{ my: 3 }}>
-              <Divider>
-                <Typography color="text.secondary" variant="body2">
-                  OR
-                </Typography>
-              </Divider>
-            </Box>
-
-            {/* Cognito Login Button */}
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              onClick={() => handleLogin()}
-              sx={{
-                py: 1.5,
-                fontSize: '1.1rem',
-                textTransform: 'none',
-              }}
-            >
-              Sign in with Email
-            </Button>
-
             {/* Footer */}
             <Box sx={{ mt: 3, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
-                By continuing, you agree to our{' '}
+                Don't have an account?{' '}
                 <Typography
                   component="a"
                   href="#"
                   variant="body2"
                   color="primary"
                   sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                  onClick={() => navigate('/signup')}
                 >
-                  Terms of Service
-                </Typography>
-                {' '}and{' '}
-                <Typography
-                  component="a"
-                  href="#"
-                  variant="body2"
-                  color="primary"
-                  sx={{ textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
-                >
-                  Privacy Policy
+                  Sign up
                 </Typography>
               </Typography>
             </Box>
           </Paper>
         </Box>
       </Container>
+
+      {/* Error Snackbar */}
+      <Snackbar open={!!error} autoHideDuration={6000} onClose={() => setError('')}>
+        <Alert severity="error" onClose={() => setError('')}>
+          {error}
+        </Alert>
+      </Snackbar>
     </Layout>
   );
 }

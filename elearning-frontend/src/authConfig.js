@@ -7,14 +7,8 @@ const awsConfig = {
     // Amazon Cognito Web Client ID
     userPoolWebClientId: '763kbchi8hhj014b65lafqj4ra', // Replace with your App Client ID
     region: 'ap-south-1', // Replace with your region
-    // Optional: OAuth configuration
-    oauth: {
-      domain: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com',
-      scope: ['email', 'openid', 'profile'],
-      redirectSignIn: 'https://d9tn5d9nagzbs.cloudfront.net/',
-      redirectSignOut: 'https://d9tn5d9nagzbs.cloudfront.net/',
-      responseType: 'code'
-    }
+    // Configure direct authentication
+    authenticationFlowType: 'USER_SRP_AUTH'
   }
 };
 
