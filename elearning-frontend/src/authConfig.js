@@ -9,7 +9,7 @@ const awsConfig = {
     region: 'ap-south-1', // Replace with your region
     // Optional: OAuth configuration
     oauth: {
-      domain: 'auth.ap-south-1p3ax4aaf4.amazoncognito.com',
+      domain: 'ap-south-1p3ax4aaf4.auth.ap-south-1.amazoncognito.com', // Correct format
       scope: ['email', 'openid', 'profile'],
       redirectSignIn: 'https://d84l1y8p4kdic.cloudfront.net',
       redirectSignOut: 'https://d84l1y8p4kdic.cloudfront.net',
