@@ -9,11 +9,22 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const checkUser = useCallback(async () => {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      setUser(currentUser);
+    } catch (error) {
+      setUser(null);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const setupAuthListener = useCallback(() => {
-    Hub.listen('auth', ({ payload: { event, data } }) => {
+    Hub.listen('auth', async ({ payload: { event, data } }) => {
       switch (event) {
         case 'signIn':
-          setUser(data);
+          await checkUser();
           navigate('/dashboard');
           break;
         case 'signOut':
@@ -21,34 +32,48 @@ export function AuthProvider({ children }) {
           navigate('/');
           break;
         case 'customOAuthState':
-          // Handle custom state if needed
+          break;
+        case 'tokenRefresh':
+          await checkUser();
+          break;
+        case 'cognitoHostedUI':
+          await checkUser();
+          navigate('/dashboard');
           break;
         default:
           break;
       }
     });
-  }, [navigate]);
-
-  async function checkUser() {
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      setUser(currentUser);
-      setLoading(false);
-    } catch (error) {
-      setUser(null);
-      setLoading(false);
-    }
-  }
+  }, [navigate, checkUser]);
 
   useEffect(() => {
     checkUser();
     setupAuthListener();
-  }, [setupAuthListener]);
+
+    // Refresh auth state periodically
+    const interval = setInterval(() => {
+      checkUser();
+    }, 30 * 60 * 1000); // Check every 30 minutes
+
+    return () => clearInterval(interval);
+  }, [checkUser, setupAuthListener]);
+
+  const signOut = async () => {
+    try {
+      await Auth.signOut();
+      setUser(null);
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   const value = {
     user,
     loading,
     checkUser,
+    signOut,
+    isAuthenticated: !!user,
   };
 
   return (
