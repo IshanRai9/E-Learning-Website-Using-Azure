@@ -1,5 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const courseContentRoutes = require('./courseContent');
+const courseRoutes = require('./courses');
+
+// Course content routes
+router.use('/course-content', courseContentRoutes);
+
+// Course routes
+router.use('/courses', courseRoutes);
 
 // Example API endpoint
 router.get("/", (req, res) => {

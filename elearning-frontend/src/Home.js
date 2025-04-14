@@ -8,7 +8,8 @@ import {
   Card, 
   CardContent, 
   Container,
-  useTheme
+  useTheme,
+  CardMedia
 } from '@mui/material';
 import { 
   FaBook, 
@@ -17,6 +18,33 @@ import {
   FaArrowRight
 } from 'react-icons/fa';
 import Layout from './components/Layout';
+
+const mockCourses = [
+  {
+    id: 1,
+    title: "Introduction to Web Development",
+    description: "Learn the basics of HTML, CSS, and JavaScript",
+    instructor: "John Doe",
+    price: 49.99,
+    image: "https://source.unsplash.com/random/400x300?web",
+  },
+  {
+    id: 2,
+    title: "Python Programming Masterclass",
+    description: "Master Python programming from scratch",
+    instructor: "Jane Smith",
+    price: 59.99,
+    image: "https://source.unsplash.com/random/400x300?python",
+  },
+  {
+    id: 3,
+    title: "Data Science Fundamentals",
+    description: "Introduction to data analysis and visualization",
+    instructor: "Mike Johnson",
+    price: 69.99,
+    image: "https://source.unsplash.com/random/400x300?data",
+  },
+];
 
 function Home() {
   const theme = useTheme();
@@ -204,6 +232,56 @@ function Home() {
           </Box>
         </Container>
       </Box>
+
+      <Container maxWidth="lg">
+        <Box sx={{ my: 4 }}>
+          <Typography variant="h3" component="h1" gutterBottom align="center">
+            Welcome to E-Learning Platform
+          </Typography>
+          <Typography variant="h5" component="h2" gutterBottom align="center" color="textSecondary">
+            Discover our featured courses
+          </Typography>
+        </Box>
+
+        <Grid container spacing={4}>
+          {mockCourses.map((course) => (
+            <Grid item xs={12} sm={6} md={4} key={course.id}>
+              <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                <CardMedia
+                  component="img"
+                  height="200"
+                  image={course.image}
+                  alt={course.title}
+                />
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography gutterBottom variant="h5" component="h2">
+                    {course.title}
+                  </Typography>
+                  <Typography>
+                    {course.description}
+                  </Typography>
+                  <Typography variant="subtitle1" color="textSecondary" sx={{ mt: 2 }}>
+                    Instructor: {course.instructor}
+                  </Typography>
+                  <Typography variant="h6" color="primary" sx={{ mt: 1 }}>
+                    ${course.price}
+                  </Typography>
+                  <Button
+                    component={Link}
+                    to={`/course/${course.id}`}
+                    variant="contained"
+                    color="primary"
+                    fullWidth
+                    sx={{ mt: 2 }}
+                  >
+                    View Course
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Container>
     </Layout>
   );
 }
