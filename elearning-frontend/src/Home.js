@@ -1,5 +1,6 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from './contexts/AuthContext';
 import { 
   Box, 
   Typography, 
@@ -48,6 +49,14 @@ const mockCourses = [
 
 function Home() {
   const theme = useTheme();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   return (
     <Layout>
