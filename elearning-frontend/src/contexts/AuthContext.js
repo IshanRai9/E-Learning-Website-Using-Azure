@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import { Auth, Hub } from 'aws-amplify';
 import { useNavigate } from 'react-router-dom';
 
@@ -9,23 +9,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    checkUser();
-    setupAuthListener();
-  }, []);
-
-  async function checkUser() {
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      setUser(currentUser);
-      setLoading(false);
-    } catch (error) {
-      setUser(null);
-      setLoading(false);
-    }
-  }
-
-  function setupAuthListener() {
+  const setupAuthListener = useCallback(() => {
     Hub.listen('auth', ({ payload: { event, data } }) => {
       switch (event) {
         case 'signIn':
@@ -43,7 +27,23 @@ export function AuthProvider({ children }) {
           break;
       }
     });
+  }, [navigate]);
+
+  async function checkUser() {
+    try {
+      const currentUser = await Auth.currentAuthenticatedUser();
+      setUser(currentUser);
+      setLoading(false);
+    } catch (error) {
+      setUser(null);
+      setLoading(false);
+    }
   }
+
+  useEffect(() => {
+    checkUser();
+    setupAuthListener();
+  }, [setupAuthListener]);
 
   const value = {
     user,
