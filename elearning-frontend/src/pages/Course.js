@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Layout from '../components/Layout';
+import CourseContentUpload from '../components/CourseContentUpload';
+import PDFViewer from '../components/PDFViewer';
 import {
   Box,
   Container,
@@ -14,6 +16,8 @@ import {
   ListItemIcon,
   ListItemText,
   Paper,
+  Tab,
+  Tabs,
 } from '@mui/material';
 import {
   FaPlay,
@@ -21,15 +25,20 @@ import {
   FaClock,
   FaUsers,
   FaCheckCircle,
+  FaFilePdf,
 } from 'react-icons/fa';
+import { useAuth } from '../contexts/AuthContext';
 
 function Course() {
   const { courseId } = useParams();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [pdfs, setPdfs] = useState([]);
+  const [selectedPdf, setSelectedPdf] = useState(null);
+  const [tabValue, setTabValue] = useState(0);
+  const { user } = useAuth();
 
   useEffect(() => {
-    // Fetch course data
     const fetchCourse = async () => {
       try {
         const response = await fetch(`/api/courses/${courseId}`);
@@ -45,8 +54,43 @@ function Course() {
       }
     };
 
+    const fetchPdfs = async () => {
+      try {
+        const response = await fetch(`/api/course-content/${courseId}`, {
+          headers: {
+            'Authorization': `Bearer ${user.signInUserSession.accessToken.jwtToken}`
+          }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setPdfs(data.filter(content => content.type === 'pdf'));
+        }
+      } catch (error) {
+        console.error('Error fetching PDFs:', error);
+      }
+    };
+
     fetchCourse();
-  }, [courseId]);
+    if (user) {
+      fetchPdfs();
+    }
+  }, [courseId, user]);
+
+  const handlePdfClick = async (pdf) => {
+    try {
+      const response = await fetch(`/api/course-content/${courseId}/content/${pdf.contentId}/url`, {
+        headers: {
+          'Authorization': `Bearer ${user.signInUserSession.accessToken.jwtToken}`
+        }
+      });
+      if (response.ok) {
+        const { url } = await response.json();
+        setSelectedPdf(url);
+      }
+    } catch (error) {
+      console.error('Error getting PDF URL:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -95,45 +139,71 @@ function Course() {
                   </Typography>
                 </Box>
               </Box>
-              <Button
-                variant="contained"
-                startIcon={<FaPlay />}
-                size="large"
-                fullWidth
-              >
-                Start Learning
-              </Button>
             </Paper>
 
-            {/* Course Content */}
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Course Content
-              </Typography>
-              <List>
-                {(course.content || []).map((item, index) => (
-                  <ListItem key={index} sx={{ px: 0 }}>
-                    <ListItemIcon>
-                      {item.completed ? (
-                        <FaCheckCircle color="success" />
-                      ) : (
-                        <FaBook />
-                      )}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.title}
-                      secondary={`${item.duration || '1 hour'}`}
-                    />
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<FaPlay />}
-                    >
-                      Start
-                    </Button>
-                  </ListItem>
-                ))}
-              </List>
+            {/* Tabs */}
+            <Paper sx={{ mb: 3 }}>
+              <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+                <Tab label="Content" />
+                <Tab label="Course Materials" />
+              </Tabs>
+              
+              <Box sx={{ p: 3 }}>
+                {tabValue === 0 && (
+                  <List>
+                    {(course.content || []).map((item, index) => (
+                      <ListItem key={index} sx={{ px: 0 }}>
+                        <ListItemIcon>
+                          {item.completed ? (
+                            <FaCheckCircle color="success" />
+                          ) : (
+                            <FaBook />
+                          )}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.title}
+                          secondary={`${item.duration || '1 hour'}`}
+                        />
+                        <Button
+                          variant="outlined"
+                          size="small"
+                          startIcon={<FaPlay />}
+                        >
+                          Start
+                        </Button>
+                      </ListItem>
+                    ))}
+                  </List>
+                )}
+
+                {tabValue === 1 && (
+                  <>
+                    {user && <CourseContentUpload courseId={courseId} />}
+                    
+                    <List>
+                      {pdfs.map((pdf, index) => (
+                        <ListItem
+                          key={index}
+                          button
+                          onClick={() => handlePdfClick(pdf)}
+                        >
+                          <ListItemIcon>
+                            <FaFilePdf />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={pdf.title}
+                            secondary={new Date(pdf.uploadedAt).toLocaleDateString()}
+                          />
+                        </ListItem>
+                      ))}
+                    </List>
+
+                    {selectedPdf && (
+                      <PDFViewer url={selectedPdf} />
+                    )}
+                  </>
+                )}
+              </Box>
             </Paper>
           </Grid>
 
