@@ -9,7 +9,6 @@ import {
   Grid,
   Paper,
   Avatar,
-  LinearProgress,
   Card,
   CardContent,
   List,
