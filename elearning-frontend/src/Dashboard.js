@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { useAuth } from './contexts/AuthContext';
 import Layout from './components/Layout';
 import {
@@ -32,24 +33,20 @@ import {
 
 function Dashboard() {
   const { user } = useAuth();
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
 
-  // Mock data - Replace with actual API calls
-  const enrolledCourses = [
-    {
-      id: 1,
-      title: 'Introduction to Web Development',
-      progress: 75,
-      lastAccessed: '2024-02-20',
-      thumbnail: '/images/courses/web-dev.jpg',
-    },
-    {
-      id: 2,
-      title: 'Advanced JavaScript Concepts',
-      progress: 30,
-      lastAccessed: '2024-02-19',
-      thumbnail: '/images/courses/javascript.jpg',
-    },
-  ];
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/courses');
+        setEnrolledCourses(response.data);
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   const achievements = [
     { id: 1, title: 'First Course Completed', date: '2024-01-15' },
@@ -149,7 +146,7 @@ function Dashboard() {
                               mr: 2,
                               objectFit: 'cover',
                             }}
-                            src={course.thumbnail}
+                            src={course.thumbnail || '/images/default-thumbnail.jpg'}
                             alt={course.title}
                           />
                           <Box sx={{ flexGrow: 1 }}>
@@ -159,7 +156,7 @@ function Dashboard() {
                             <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                               <FaClock style={{ marginRight: 4, fontSize: 14 }} />
                               <Typography variant="body2" color="text.secondary">
-                                Last accessed: {course.lastAccessed}
+                                Duration: {course.duration}
                               </Typography>
                             </Box>
                           </Box>
@@ -169,20 +166,8 @@ function Dashboard() {
                             startIcon={<FaPlay />}
                             sx={{ minWidth: 100 }}
                           >
-                            Resume
+                            Start
                           </Button>
-                        </Box>
-                        <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Box sx={{ flexGrow: 1, mr: 2 }}>
-                            <LinearProgress 
-                              variant="determinate" 
-                              value={course.progress} 
-                              sx={{ height: 8, borderRadius: 4 }}
-                            />
-                          </Box>
-                          <Typography variant="body2" color="text.secondary">
-                            {course.progress}%
-                          </Typography>
                         </Box>
                       </CardContent>
                     </Card>

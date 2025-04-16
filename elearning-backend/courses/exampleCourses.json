@@ -1,0 +1,23 @@
+[
+  {
+    "id": "1",
+    "title": "Introduction to AWS",
+    "description": "Learn the basics of Amazon Web Services.",
+    "instructor": "John Doe",
+    "duration": "3 hours"
+  },
+  {
+    "id": "2",
+    "title": "React for Beginners",
+    "description": "A beginner's guide to building web applications with React.",
+    "instructor": "Jane Smith",
+    "duration": "5 hours"
+  },
+  {
+    "id": "3",
+    "title": "Advanced Node.js",
+    "description": "Deep dive into Node.js for backend development.",
+    "instructor": "Alice Johnson",
+    "duration": "4 hours"
+  }
+]
