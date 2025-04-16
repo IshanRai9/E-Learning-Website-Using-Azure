@@ -24,7 +24,6 @@ import {
   FaBook,
   FaClock,
   FaUsers,
-  FaCheckCircle,
   FaFilePdf,
 } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
