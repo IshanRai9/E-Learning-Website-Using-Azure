@@ -41,12 +41,34 @@ function Course() {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await fetch(`/api/courses/${courseId}`);
-        if (!response.ok) {
-          throw new Error('Course not found');
+        if (courseId === '4') { // Hardcoded for DS course
+          setCourse({
+            id: '4',
+            title: 'DS',
+            description: 'Data Structures course with video and PDF content.',
+            instructor: 'System Generated',
+            duration: '2 hours',
+            content: [
+              {
+                type: 'video',
+                title: 'DS Video',
+                url: 'https://elearning-course-content.s3.ap-south-1.amazonaws.com/DS/DS.mp4',
+              },
+              {
+                type: 'pdf',
+                title: 'DS PDF',
+                url: 'https://elearning-course-content.s3.ap-south-1.amazonaws.com/DS/DS_22102B0065_IshanRai.pdf',
+              },
+            ],
+          });
+        } else {
+          const response = await fetch(`/api/courses/${courseId}`);
+          if (!response.ok) {
+            throw new Error('Course not found');
+          }
+          const data = await response.json();
+          setCourse(data);
         }
-        const data = await response.json();
-        setCourse(data);
       } catch (error) {
         console.error('Error fetching course:', error);
       } finally {
@@ -90,6 +112,34 @@ function Course() {
     } catch (error) {
       console.error('Error getting PDF URL:', error);
     }
+  };
+
+  const renderContent = () => {
+    if (tabValue === 0) {
+      return (
+        <List>
+          {(course.content || []).map((item, index) => (
+            <ListItem key={index} sx={{ px: 0 }}>
+              <ListItemIcon>
+                {item.type === 'video' ? <FaPlay /> : <FaFilePdf />}
+              </ListItemIcon>
+              <ListItemText
+                primary={item.title}
+                secondary={item.type === 'video' ? 'Video Content' : 'PDF Document'}
+              />
+              <Button
+                variant="outlined"
+                size="small"
+                onClick={() => window.open(item.url, '_blank')}
+              >
+                View
+              </Button>
+            </ListItem>
+          ))}
+        </List>
+      );
+    }
+    return null;
   };
 
   if (loading) {
@@ -149,32 +199,7 @@ function Course() {
               </Tabs>
               
               <Box sx={{ p: 3 }}>
-                {tabValue === 0 && (
-                  <List>
-                    {(course.content || []).map((item, index) => (
-                      <ListItem key={index} sx={{ px: 0 }}>
-                        <ListItemIcon>
-                          {item.completed ? (
-                            <FaCheckCircle color="success" />
-                          ) : (
-                            <FaBook />
-                          )}
-                        </ListItemIcon>
-                        <ListItemText
-                          primary={item.title}
-                          secondary={`${item.duration || '1 hour'}`}
-                        />
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          startIcon={<FaPlay />}
-                        >
-                          Start
-                        </Button>
-                      </ListItem>
-                    ))}
-                  </List>
-                )}
+                {renderContent()}
 
                 {tabValue === 1 && (
                   <>
@@ -252,4 +277,4 @@ function Course() {
   );
 }
 
-export default Course; 
+export default Course;
